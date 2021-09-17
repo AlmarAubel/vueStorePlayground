@@ -2,17 +2,17 @@ import useStore from "@/useStore";
 import { reactive } from "vue";
 
 const initialState = reactive({
-  bookname: "harry snotter" as string,
+  fruit: "apple" as string,
   loading: false,
   counter: 1,
 });
 
-const bookStore = useStore(
-  "bookStore",
+const fruitStore = useStore(
+  "fruitStore",
   initialState,
   (s) => ({
-    setBookname(name: string) {
-      s.bookname = name;
+    setFruit(name: string) {
+      s.fruit = name;
       s.counter++;
     },
     setLoading(loading: boolean) {
@@ -25,4 +25,4 @@ const bookStore = useStore(
   { logging: true }
 );
 
-export default bookStore;
+export default fruitStore;

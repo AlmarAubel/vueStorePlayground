@@ -8,7 +8,6 @@ type Options = {
 // TODO in een latere fase, Mutations afdwingen dat er alleen functie's in het object zitten die geen promise returnen
 // TODO in een latere fase Actions afdwingen dat er alleen functie's in het object zitten
 // TODO de log functie ook een diff tussen de state before en stateafter laten zien.
-
 const useStore = <
   // The state
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -77,6 +76,7 @@ const useStore = <
   }
 
   return {
+    name,
     store,
     injectionKey,
   };
