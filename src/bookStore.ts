@@ -15,12 +15,12 @@ const bookStore = useStore(
       s.bookname = name;
       s.counter++;
     },
-    setLoading(loading: boolean) {
-      s.loading = loading;
-    },
   }),
   (m, s) => {
-    return {};
+    const setBooknameAsync = async (name: string) => {
+      s.bookname = name + Date.now();
+    };
+    return { setBooknameAsync };
   },
   { logging: true }
 );

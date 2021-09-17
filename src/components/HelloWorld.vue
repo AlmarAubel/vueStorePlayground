@@ -2,7 +2,7 @@
   <div class="hello">
     Book:
     {{ state.bookname }} {{ state.counter }}
-    <button v-on:click="mutations.setBookname('Lord of the rings')">
+    <button v-on:click="actions.setBooknameAsync('Lord of the rings')">
       klik maar
     </button>
     <br />
@@ -22,9 +22,9 @@ export default defineComponent({
     msg: String,
   },
   setup() {
-    const { state, mutations } = bookStore.store;
+    const { state, mutations, actions } = bookStore.store;
     const { state: fruitState, mutations: fruitM } = fruitStore.store;
-    return { state, mutations, fruitState, fruitM };
+    return { state, mutations, actions, fruitState, fruitM };
   },
 });
 </script>

@@ -46,7 +46,7 @@ export default function reduxHelper<T>(name: string, initialState: T) {
     /**
      * The data to send to the devtools. Should be inside a "watcher" at the top level that listens for all changes
      */
-    send(payload:any, state: T) {
+    send(functioName: string ,payload:any, state: T) {
       init();
       
       const stateClean = JSON.parse(JSON.stringify(state));
@@ -58,7 +58,7 @@ export default function reduxHelper<T>(name: string, initialState: T) {
 
         return;
       }
-      ReduxTool.send({ type: name, payloadClean }, globaleState);
+      ReduxTool.send({ type: name +'-'+ functioName, payloadClean }, globaleState);
     },
     /**
      * When a change inside the devtools is made (ex: timeline replay) this callback will be called

@@ -1,4 +1,4 @@
-﻿import { InjectionKey, readonly, toRefs } from "vue";
+﻿import { InjectionKey, readonly, ref, toRefs, watch } from "vue";
 
 import reduxHelper from "./reduxDevHelper";
 type Options = {
@@ -33,20 +33,22 @@ const useStore = <
     Object.assign(state, s);
   });
   const readonlyState = toRefs(readonly(state));
-  const wrappedMutations = options?.logging
-    ? addLogging(mutations(state))
-    : mutations(state);
+  const wrappedMutations = addLogging(mutations(state));
+  const wrappedActions = addActionLogging(
+    actions(wrappedMutations, state as TState)
+  );
+
   const store = {
     state: readonlyState,
     mutations: wrappedMutations,
-    actions: actions(wrappedMutations, readonlyState as TState),
+    actions: wrappedActions,
   };
 
   const initMockStore = (a: TActions): typeof store => {
     return {
       state: readonlyState,
       mutations: wrappedMutations,
-      actions: a(wrappedMutations, readonlyState as TState),
+      actions: addActionLogging(a(wrappedMutations, readonlyState as TState)),
     };
   };
 
@@ -54,25 +56,51 @@ const useStore = <
 
   function logDecorator<T extends Array<any>, U>(fn: (...args: T) => U) {
     return (...args: T): U => {
-      const stateBefore = deepCopyObject(state);
       const result = fn(...args);
-      const stateAfter = deepCopyObject(state);
-      redux.send(args, state);
-      console.log(
-        `Store: ${name} state changed by ${fn.name}`,
-        stateBefore,
-        stateAfter
-      );
+      redux.send(fn.name, args, state);
+      return result;
+    };
+  }
+  const currFunc = {
+    name: "",
+    args: {},
+  };
+  const shouldLog = ref(false);
+
+  watch(state, (value) => {
+    console.log("shoudlog", shouldLog.value);
+    shouldLog.value
+      ? redux.send("stateChanged" + "-" + currFunc.name, currFunc.args, value)
+      : null;
+  });
+  function actionLogDecorator<T extends Array<any>, U>(fn: (...args: T) => U) {
+    return async (...args: T): Promise<U> => {
+      shouldLog.value = true;
+      currFunc.name = fn.name;
+      currFunc.args = args;
+      const result = await fn(...args);
+
+      currFunc.name = "";
+      currFunc.args = {};
+      shouldLog.value = false;
       return result;
     };
   }
 
-  function addLogging(object: Record<string, any>) {
+  function addLogging<T>(object: T) {
     const result: Record<string, any> = {};
     Object.entries(object).forEach(
       ([key, value]) => (result[key] = logDecorator(value))
     );
     return result as unknown as ReturnType<TMutations>;
+  }
+
+  function addActionLogging<T>(object: T) {
+    const result: Record<string, any> = {};
+    Object.entries(object).forEach(
+      ([key, value]) => (result[key] = actionLogDecorator(value))
+    );
+    return result as unknown as ReturnType<TActions>;
   }
 
   return {
