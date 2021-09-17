@@ -1,28 +1,15 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  Book:
-  {{ state.bookname }} {{ state.counter }}
-  <button v-on:click="mutations.setBookname('Lord of the rings')">
-    klik maar
-  </button>
-  <br />
-  fruit: {{ fruitState.fruit }} {{ fruitState.counter }}
-  <button v-on:click="fruitM.setFruit('Peach')">klik maar fruit</button>
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link :to="{ name: 'About', params: { msg: 'hoi' }}">About</router-link>
+  </div>
+  <router-view />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import bookStore from "@/bookStore";
-import fruitStore from "@/superMarketStore";
-
 export default defineComponent({
   name: "App",
-  setup() {
-    const { state, mutations } = bookStore.store;
-    const { state: fruitState, mutations: fruitM } = fruitStore.store;
-    mutations.setLoading(true);
-    return { state, mutations, fruitState, fruitM };
-  },
 });
 </script>
 
@@ -33,6 +20,18 @@ export default defineComponent({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
 }
 </style>
