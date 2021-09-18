@@ -1,5 +1,6 @@
 import useStore from "@/useStore";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
+import component from "*.vue";
 
 const initialState = reactive({
   bookname: "harry snotter" as string,
@@ -7,22 +8,27 @@ const initialState = reactive({
   counter: 1,
 });
 
-const bookStore = useStore(
-  "bookStore",
-  initialState,
-  (s) => ({
+const bookStore = useStore("bookStore", initialState, {
+  mutations: (s) => ({
     setBookname(name: string) {
       s.bookname = name;
       s.counter++;
     },
   }),
-  (m, s) => {
+  actions: (m, s) => {
     const setBooknameAsync = async (name: string) => {
+      s.loading = true;
       s.bookname = name + Date.now();
+      setTimeout(() => (s.loading = false), 500);
     };
     return { setBooknameAsync };
   },
-  { logging: true }
-);
+  getters: (s) => {
+    const combined = computed(() => s.bookname + "-" + s.counter);
+    return { combined };
+  },
+
+  options: { logging: true },
+});
 
 export default bookStore;

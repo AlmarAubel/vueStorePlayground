@@ -14,6 +14,8 @@ const useStore = <
   TState extends object,
   // Mutations that have no side effects beside changing the state
   TMutations extends (s: TState) => ReturnType<TMutations>,
+  //Getters For computed  props
+  TGetters extends (s: TState) => ReturnType<TGetters>,
   // Actions that have side effects. Actions can change state. Side effects for example an api call
   TActions extends (
     m: ReturnType<TMutations>,
@@ -22,9 +24,12 @@ const useStore = <
 >(
   name: string,
   state: TState,
-  mutations: TMutations,
-  actions: TActions,
-  options?: Options
+  additionalProps: {
+    mutations: TMutations;
+    getters: TGetters;
+    actions: TActions;
+    options?: Options;
+  }
 ) => {
   const redux = reduxHelper(name, state);
 
@@ -33,75 +38,32 @@ const useStore = <
     Object.assign(state, s);
   });
   const readonlyState = toRefs(readonly(state));
-  const wrappedMutations = addLogging(mutations(state));
-  const wrappedActions = addActionLogging(
-    actions(wrappedMutations, state as TState)
-  );
 
+  const wrappedMutations = additionalProps.mutations(state);
+  const wrappedActions = additionalProps.actions(
+    wrappedMutations,
+    state as TState
+  );
+  const getters = additionalProps.getters(state);
   const store = {
     state: readonlyState,
     mutations: wrappedMutations,
     actions: wrappedActions,
+    getters,
   };
 
   const initMockStore = (a: TActions): typeof store => {
     return {
-      state: readonlyState,
-      mutations: wrappedMutations,
-      actions: addActionLogging(a(wrappedMutations, readonlyState as TState)),
+      ...store,
+      actions: a(wrappedMutations, state as TState),
     };
   };
 
   const injectionKey: InjectionKey<typeof store> = Symbol(name);
 
-  function logDecorator<T extends Array<any>, U>(fn: (...args: T) => U) {
-    return (...args: T): U => {
-      const result = fn(...args);
-      redux.send(fn.name, args, state);
-      return result;
-    };
-  }
-  const currFunc = {
-    name: "",
-    args: {},
-  };
-  const shouldLog = ref(false);
-
   watch(state, (value) => {
-    console.log("shoudlog", shouldLog.value);
-    shouldLog.value
-      ? redux.send("stateChanged" + "-" + currFunc.name, currFunc.args, value)
-      : null;
+    redux.send("changed", value, value);
   });
-  function actionLogDecorator<T extends Array<any>, U>(fn: (...args: T) => U) {
-    return async (...args: T): Promise<U> => {
-      shouldLog.value = true;
-      currFunc.name = fn.name;
-      currFunc.args = args;
-      const result = await fn(...args);
-
-      currFunc.name = "";
-      currFunc.args = {};
-      shouldLog.value = false;
-      return result;
-    };
-  }
-
-  function addLogging<T>(object: T) {
-    const result: Record<string, any> = {};
-    Object.entries(object).forEach(
-      ([key, value]) => (result[key] = logDecorator(value))
-    );
-    return result as unknown as ReturnType<TMutations>;
-  }
-
-  function addActionLogging<T>(object: T) {
-    const result: Record<string, any> = {};
-    Object.entries(object).forEach(
-      ([key, value]) => (result[key] = actionLogDecorator(value))
-    );
-    return result as unknown as ReturnType<TActions>;
-  }
 
   return {
     name,
@@ -110,5 +72,4 @@ const useStore = <
   };
 };
 // eslint-disable-next-line @typescript-eslint/ban-types
-const deepCopyObject = (object: Object) => JSON.parse(JSON.stringify(object));
 export default useStore;

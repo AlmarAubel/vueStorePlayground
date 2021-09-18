@@ -7,10 +7,8 @@ const initialState = reactive({
   counter: 1,
 });
 
-const fruitStore = useStore(
-  "fruitStore",
-  initialState,
-  (s) => ({
+const fruitStore = useStore("fruitStore", initialState, {
+  mutations: (s) => ({
     setFruit(name: string) {
       s.fruit = name;
       s.counter++;
@@ -19,10 +17,11 @@ const fruitStore = useStore(
       s.loading = loading;
     },
   }),
-  (m, s) => {
+  actions: (m, s) => {
     return {};
   },
-  { logging: true }
-);
+  getters: (s) => ({}),
+  options: { logging: true },
+});
 
 export default fruitStore;
