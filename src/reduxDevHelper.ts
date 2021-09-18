@@ -16,7 +16,7 @@ const extension = !process.browser
     window.top.__REDUX_DEVTOOLS_EXTENSION__ ||
     reduxPlaceholder;
 const ReduxTool = extension.connect({
-  trace: () => new Error().stack.split('\n').slice(0, 25+1).join('\n'),
+  trace:true,
   traceLimit:25
   
 });

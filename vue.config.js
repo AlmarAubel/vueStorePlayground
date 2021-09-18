@@ -4,4 +4,10 @@ module.exports = {
       devtool: "source-map",
     };
   },
+
+  pluginOptions: {
+    webpack: {
+      dir: ["./webpack"],
+    },
+  },
 };

@@ -26,7 +26,7 @@ const useStore = <
   state: TState,
   additionalProps: {
     mutations: TMutations;
-    getters: TGetters;
+    getters?: TGetters;
     actions: TActions;
     options?: Options;
   }

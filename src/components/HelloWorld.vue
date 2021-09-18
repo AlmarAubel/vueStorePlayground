@@ -1,8 +1,7 @@
 <template>
   <div class="hello">
     Book:
-    {{ state.bookname }} {{ state.counter }}
-    <br/>Getter:{{ x }}
+    {{ state.bookname }} {{ state.counter }} <br />Getter:{{ x }}
     <button v-on:click="actions.setBooknameAsync('Lord of the rings')">
       klik maar
     </button>
