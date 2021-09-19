@@ -14,6 +14,9 @@ const bookStore = useStore("bookStore", initialState, {
       s.bookname = name;
       s.counter++;
     },
+    async fiets(name: string) {
+      return Promise.resolve(name);
+    },
   }),
   actions: (m, s) => {
     const setBooknameAsync = async (name: string) => {

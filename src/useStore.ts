@@ -40,10 +40,7 @@ const useStore = <
   const readonlyState = toRefs(readonly(state));
 
   const mutations = additionalProps.mutations(state);
-  const actions = additionalProps.actions(
-    mutations as TMutationsReturnType,
-    state as TState
-  );
+  const actions = additionalProps.actions(mutations, state as TState);
   const getters = additionalProps.getters(state);
   const store = {
     state: readonlyState,

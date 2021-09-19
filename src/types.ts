@@ -14,8 +14,11 @@ export type Getters<A> = {
     : never;
 };
 
+//Mutations should be a function but can never be a promise
 export type Mutations<A> = {
   [k in keyof A]: A[k] extends (...args: infer P) => infer R
-    ? (...args: P) => R
+    ? A[k] extends (...args: infer P) => Promise<infer R>
+      ? never
+      : (...args: P) => R
     : never;
 };
