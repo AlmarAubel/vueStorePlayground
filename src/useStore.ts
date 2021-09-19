@@ -12,20 +12,19 @@ const useStore = <
   // eslint-disable-next-line @typescript-eslint/ban-types
   TState extends object,
   // Mutations that have no side effects beside changing the state
-  TMutationsReturnType extends Mutations<ReturnType<TMutations>>,
-  TMutations extends (s: TState) => TMutationsReturnType,
+  TMutations extends (s: TState) => Mutations<ReturnType<TMutations>>,
   //Getters For computed  props
   TGetters extends (s: TState) => Getters<ReturnType<TGetters>>,
   // Actions that have side effects. Actions can change state. Side effects for example an api call
   TActions extends (
-    m: TMutationsReturnType,
+    m: Mutations<ReturnType<TMutations>>,
     s: TState
   ) => Actions<ReturnType<TActions>>
 >(
   name: string,
   state: TState,
+  mutations: TMutations,
   additionalProps: {
-    mutations: TMutations;
     getters: TGetters;
     actions: TActions;
     options?: Options;
@@ -39,12 +38,12 @@ const useStore = <
   });
   const readonlyState = toRefs(readonly(state));
 
-  const mutations = additionalProps.mutations(state);
-  const actions = additionalProps.actions(mutations, state as TState);
+  const _mutations = mutations(state);
+  const actions = additionalProps.actions(_mutations, state as TState);
   const getters = additionalProps.getters(state);
   const store = {
     state: readonlyState,
-    mutations,
+    mutations: _mutations,
     actions,
     getters,
   };
@@ -52,7 +51,7 @@ const useStore = <
   const initMockStore = (a: TActions): typeof store => {
     return {
       ...store,
-      actions: a(mutations, state as TState),
+      actions: a(_mutations, state as TState),
     };
   };
 
