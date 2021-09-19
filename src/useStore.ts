@@ -7,17 +7,15 @@ type Options = {
   logging: boolean;
 };
 
-// TODO in een latere fase, Mutations afdwingen dat er alleen functie's in het object zitten die geen promise returnen
 const useStore = <
   // The state
   // eslint-disable-next-line @typescript-eslint/ban-types
   TState extends object,
-  TMutationsReturnType extends Mutations<ReturnType<TMutations>>,
   // Mutations that have no side effects beside changing the state
+  TMutationsReturnType extends Mutations<ReturnType<TMutations>>,
   TMutations extends (s: TState) => TMutationsReturnType,
   //Getters For computed  props
-  TGettersReturnType extends Getters<ReturnType<TGetters>>,
-  TGetters extends (s: TState) => TGettersReturnType,
+  TGetters extends (s: TState) => Getters<ReturnType<TGetters>>,
   // Actions that have side effects. Actions can change state. Side effects for example an api call
   TActions extends (
     m: TMutationsReturnType,
@@ -42,7 +40,10 @@ const useStore = <
   const readonlyState = toRefs(readonly(state));
 
   const mutations = additionalProps.mutations(state);
-  const actions = additionalProps.actions(mutations, state as TState);
+  const actions = additionalProps.actions(
+    mutations as TMutationsReturnType,
+    state as TState
+  );
   const getters = additionalProps.getters(state);
   const store = {
     state: readonlyState,
@@ -65,6 +66,7 @@ const useStore = <
     (value) => {
       redux.send("changed", value, value);
     },
+    //Zou mooi zijn als deze call stack kloppend is met de source map....
     { onTrigger: (event) => console.error("aaaaa", event, new Error().stack) }
   );
 

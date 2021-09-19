@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import {Getters} from "@/types";
+import { Getters } from "@/types";
 
 type functionType = <T extends Array<any>, U>(...args: any) => U;
 type functionType2 = (...args: any[]) => any;
@@ -8,28 +8,27 @@ type Actions<A> = {
     ? (...args: P) => R
     : never;
 };
- const computers = ()=>{
-   return {
-     fiets: computed(()=>"fiets")
-   }
- } 
- 
- const app: Getters<ReturnType<typeof computers>> = computers();
- 
-
-type Mutations<M> = Actions<M>;
-const bar = {
-  fiets: async (a: string, b: number) => Promise.resolve("fiets"),
-  //auto: () => "aaa",
+const computers = () => {
+  return {
+    fiets: computed(() => "fiets"),
+  };
 };
 
-const createstore = <T extends Actions<T>>(foo: T) => {
+const app: Getters<ReturnType<typeof computers>> = computers();
+
+type Mutations<M> = Actions<M>;
+const bar = () => ({
+  fiets: async (a: string, b: number) => Promise.resolve("fiets"),
+});
+
+const createstore = <T extends () => Actions<ReturnType<T>>>(foo: T) => {
   return {
-    foo,
+    foo: foo(),
   };
 };
 
 const store = createstore(bar);
+
 store.foo.fiets("a", 2);
 store.foo.fiets("a", 3);
 const x: Actions<typeof bar> = bar;

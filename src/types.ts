@@ -7,10 +7,10 @@ export type Actions<A> = {
 };
 
 export type Getters<A> = {
-  [k in keyof A]: A[k] extends (...args: infer P) => ComputedRef<infer R>
+  [k in keyof A]: A[k] extends ComputedRef<string>
+    ? ComputedRef<string>
+    : A[k] extends (...args: infer P) => ComputedRef<infer R>
     ? (...args: P) => ComputedRef<R>
-    : A[k] extends ComputedRef<infer Z>
-    ? ComputedRef<Z>
     : never;
 };
 

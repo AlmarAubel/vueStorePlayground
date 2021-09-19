@@ -18,19 +18,20 @@ const bookStore = useStore("bookStore", initialState, {
   actions: (m, s) => {
     const setBooknameAsync = async (name: string) => {
       s.loading = true;
-      s.bookname = name + Date.now();
-      setTimeout(() => (s.loading = false), 500);
+
+      setTimeout(() => {
+        s.loading = false;
+        s.bookname = name + Date.now();
+      }, 500);
     };
     return { setBooknameAsync };
   },
-  getters: (s) => {
-    const combined = computed(() => s.bookname + "-" + s.counter);
-    const filtered = (filter: number) =>
-      computed(() => s.bookname + "-" + s.counter + "-" + filter);
-    return { combined, filtered, aap: 1 };
-  },
+  getters: (s) => ({
+    combined: computed(() => s.bookname + "-" + s.counter),
+    filtered: (filter: number) =>
+      computed(() => s.bookname + "-" + s.counter + "-" + filter),
+  }),
 
   options: { logging: true },
 });
-
 export default bookStore;
