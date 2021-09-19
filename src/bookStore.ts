@@ -25,7 +25,9 @@ const bookStore = useStore("bookStore", initialState, {
   },
   getters: (s) => {
     const combined = computed(() => s.bookname + "-" + s.counter);
-    return { combined };
+    const filtered = (filter: number) =>
+      computed(() => s.bookname + "-" + s.counter + "-" + filter);
+    return { combined, filtered, aap: 1 };
   },
 
   options: { logging: true },

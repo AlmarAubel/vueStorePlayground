@@ -1,8 +1,7 @@
 module.exports = {
-  configureWebpack() {
-    return {
-      devtool: "source-map",
-    };
+  productionSourceMap: true,
+  configureWebpack: (config) => {
+    config.devtool = "source-map";
   },
 
   pluginOptions: {

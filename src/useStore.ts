@@ -1,32 +1,34 @@
-﻿import { InjectionKey, readonly, ref, toRefs, watch } from "vue";
+﻿import { InjectionKey, readonly, toRefs, watch } from "vue";
 
 import reduxHelper from "./reduxDevHelper";
+
+import { Getters, Actions, Mutations } from "@/types";
 type Options = {
   logging: boolean;
 };
 
 // TODO in een latere fase, Mutations afdwingen dat er alleen functie's in het object zitten die geen promise returnen
-// TODO in een latere fase Actions afdwingen dat er alleen functie's in het object zitten
-// TODO de log functie ook een diff tussen de state before en stateafter laten zien.
 const useStore = <
   // The state
   // eslint-disable-next-line @typescript-eslint/ban-types
   TState extends object,
+  TMutationsReturnType extends Mutations<ReturnType<TMutations>>,
   // Mutations that have no side effects beside changing the state
-  TMutations extends (s: TState) => ReturnType<TMutations>,
+  TMutations extends (s: TState) => TMutationsReturnType,
   //Getters For computed  props
-  TGetters extends (s: TState) => ReturnType<TGetters>,
+  TGettersReturnType extends Getters<ReturnType<TGetters>>,
+  TGetters extends (s: TState) => TGettersReturnType,
   // Actions that have side effects. Actions can change state. Side effects for example an api call
   TActions extends (
-    m: ReturnType<TMutations>,
+    m: TMutationsReturnType,
     s: TState
-  ) => ReturnType<TActions>
+  ) => Actions<ReturnType<TActions>>
 >(
   name: string,
   state: TState,
   additionalProps: {
     mutations: TMutations;
-    getters?: TGetters;
+    getters: TGetters;
     actions: TActions;
     options?: Options;
   }
@@ -39,31 +41,32 @@ const useStore = <
   });
   const readonlyState = toRefs(readonly(state));
 
-  const wrappedMutations = additionalProps.mutations(state);
-  const wrappedActions = additionalProps.actions(
-    wrappedMutations,
-    state as TState
-  );
+  const mutations = additionalProps.mutations(state);
+  const actions = additionalProps.actions(mutations, state as TState);
   const getters = additionalProps.getters(state);
   const store = {
     state: readonlyState,
-    mutations: wrappedMutations,
-    actions: wrappedActions,
+    mutations,
+    actions,
     getters,
   };
 
   const initMockStore = (a: TActions): typeof store => {
     return {
       ...store,
-      actions: a(wrappedMutations, state as TState),
+      actions: a(mutations, state as TState),
     };
   };
 
   const injectionKey: InjectionKey<typeof store> = Symbol(name);
 
-  watch(state, (value) => {
-    redux.send("changed", value, value);
-  });
+  watch(
+    state,
+    (value) => {
+      redux.send("changed", value, value);
+    },
+    { onTrigger: (event) => console.error("aaaaa", event, new Error().stack) }
+  );
 
   return {
     name,

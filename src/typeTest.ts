@@ -1,15 +1,26 @@
+import { computed } from "vue";
+import {Getters} from "@/types";
+
 type functionType = <T extends Array<any>, U>(...args: any) => U;
 type functionType2 = (...args: any[]) => any;
-
-export type Actions<A> = {
-  [k in keyof A]: A[k] extends (...args: infer P) => Promise<infer R>
-    ? (...args: P) => Promise<R>
+type Actions<A> = {
+  [k in keyof A]: A[k] extends (...args: infer P) => infer R
+    ? (...args: P) => R
     : never;
 };
+ const computers = ()=>{
+   return {
+     fiets: computed(()=>"fiets")
+   }
+ } 
+ 
+ const app: Getters<ReturnType<typeof computers>> = computers();
+ 
 
+type Mutations<M> = Actions<M>;
 const bar = {
   fiets: async (a: string, b: number) => Promise.resolve("fiets"),
-  auto: () => "aaa",
+  //auto: () => "aaa",
 };
 
 const createstore = <T extends Actions<T>>(foo: T) => {
