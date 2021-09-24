@@ -2,7 +2,7 @@
 
 import reduxHelper from "./reduxDevHelper";
 
-import { Getters, Actions, Mutations } from "@/types";
+import { Getters, Actions, Mutations } from "/@/types";
 type Options = {
   logging: boolean;
 };

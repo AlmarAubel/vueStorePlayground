@@ -3,9 +3,10 @@
     Book:
     {{ state.bookname }} {{ state.counter }} <br />Getter:{{ x }}
     <br />
+    {{ fruitState.counter }}
     Getter2 {{ getters.filtered(9999) }}
     <button v-on:click="actions.setBooknameAsync('Lord of the rings')">
-      klik maar
+      klik maar 2x
     </button>
     <br />
     fruit: {{ fruitState.fruit }} {{ fruitState.counter }}
@@ -15,8 +16,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import bookStore from "@/bookStore";
-import fruitStore from "@/superMarketStore";
+import bookStore from "/@/bookStore";
+import fruitStore from "/@/superMarketStore";
 
 export default defineComponent({
   name: "HelloWorld",

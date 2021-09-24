@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import { Getters } from "@/types";
+import { Getters } from "/@/types";
 
 type functionType = <T extends Array<any>, U>(...args: any) => U;
 type functionType2 = (...args: any[]) => any;
@@ -32,3 +32,14 @@ const store = createstore(bar);
 store.foo.fiets("a", 2);
 store.foo.fiets("a", 3);
 const x: Actions<typeof bar> = bar;
+
+const storeTest = (a: string, b?: string) => {
+  if (b) {
+    return { a, b };
+  }
+  return {
+    a,
+  };
+};
+
+const xxx = storeTest("aaap");

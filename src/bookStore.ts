@@ -1,4 +1,4 @@
-import useStore from "@/useStore";
+import useStore from "/@/useStore";
 import { computed, reactive } from "vue";
 import component from "*.vue";
 
@@ -38,7 +38,7 @@ const bookStore = useStore(
       filtered: (filter: number) =>
         computed(() => s.bookname + "-" + s.counter + "-" + filter),
     }),
-
+ 
     options: { logging: true },
   }
 );

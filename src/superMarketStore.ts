@@ -1,4 +1,4 @@
-import useStore from "@/useStore";
+import useStore from "/@/useStore";
 import { reactive } from "vue";
 
 const initialState = reactive({
