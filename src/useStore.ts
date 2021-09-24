@@ -53,18 +53,13 @@ const useStore = <
       ...store,
       actions: a(_mutations, state as TState),
     };
-  };
+  }; 
 
   const injectionKey: InjectionKey<typeof store> = Symbol(name);
 
-  watch(
-    state,
-    (value) => {
-      redux.send("changed", value, value);
-    },
-    //Zou mooi zijn als deze call stack kloppend is met de source map....
-    { onTrigger: (event) => console.error("aaaaa", event, new Error().stack) }
-  );
+  watch(state, (value) => {
+    redux.send("changed", value, value);
+  });
 
   return {
     name,
