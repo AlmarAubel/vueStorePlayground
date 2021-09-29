@@ -10,9 +10,7 @@ const fakeRedux = {
 };
 
 const reduxPlaceholder = { connect: () => fakeRedux };
-const extension = !process.browser
-    ? reduxPlaceholder
-    : window.__REDUX_DEVTOOLS_EXTENSION__ ||
+const extension =  window.__REDUX_DEVTOOLS_EXTENSION__ ||
     window.top.__REDUX_DEVTOOLS_EXTENSION__ ||
     reduxPlaceholder;
 const ReduxTool = extension.connect({
